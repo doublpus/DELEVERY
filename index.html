@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceNet Delivery Calculator</title>
+    <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --dark-blue: #0d47a1;
+            --light-blue: #e8f0fe;
+            --accent-blue: #4285f4;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #333333;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background-color: var(--light-gray);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: var(--white);
+            padding: 20px 0;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+        
+        .header-text {
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .tagline {
+            margin: 5px 0 0;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .form-section, .result-section {
+            flex: 1;
+            min-width: 300px;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid var(--primary-blue);
+        }
+        
+        h2 {
+            color: var(--primary-blue);
+            margin-top: 0;
+            font-size: 22px;
+            border-bottom: 1px solid var(--medium-gray);
+            padding-bottom: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: var(--white);
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-container input {
+            width: auto;
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+        
+        #result {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 25px 0;
+            padding: 20px;
+            background-color: var(--light-blue);
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-blue);
+            color: var(--dark-blue);
+            text-align: center;
+        }
+        
+        .price-breakdown {
+            margin-top: 25px;
+            background-color: var(--light-blue);
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .price-breakdown h3 {
+            margin-top: 0;
+            color: var(--primary-blue);
+        }
+        
+        .price-breakdown div {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .price-breakdown div:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--medium-gray);
+            color: var(--dark-blue);
+        }
+        
+        small {
+            color: #666;
+            font-size: 0.85em;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        .item-list {
+            margin-bottom: 20px;
+        }
+        
+        .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+        }
+        
+        .item-name {
+            flex: 1;
+        }
+        
+        .remove-item {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .add-item-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .box-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .box-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .box-option input {
+            width: auto;
+            margin-right: 10px;
+        }
+        
+        .amount-input {
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-container {
+                flex-direction: column;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo-container {
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <!-- Replace with your actual logo path -->
+                <img src="https://via.placeholder.com/50x50/1a73e8/ffffff?text=SN" alt="SpaceNet Logo" class="logo">
+                <div class="header-text">
+                    <h1>SpaceNet Delivery Calculator</h1>
+                    <p class="tagline">Calculate delivery costs for your purchases</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="calculator-container">
+            <div class="form-section">
+                <h2>Product Information</h2>
+                
+                <div>
+                    <label for="mainCategory">Main Category:</label>
+                    <select id="mainCategory" onchange="updateSubcategories()">
+                        <option value="">Select a category</option>
+                        <option value="electromenager">Électroménager</option>
+                        <option value="electronique">Électronique</option>
+                        <option value="tv">TV</option>
+                        <option value="burotique">Burotique</option>
+                        <option value="maison_jardin">Maison/Jardin</option>
+                        <option value="autres">Autres</option>
+                    </select>
+                </div>
+                
+                <div id="subcategoryContainer" class="hidden">
+                    <label for="subcategory">Subcategory:</label>
+                    <select id="subcategory" onchange="updateProducts()">
+                        
+                    </select>
+                </div>
+                
+                <div id="productContainer" class="hidden">
+                    <label for="product">Product:</label>
+                    <select id="product" onchange="showProductDetails()"></select>
+                </div>
+                
+                <div id="productDetailsContainer" class="hidden">
+                    <!-- Dynamic content based on product selection -->
+                </div>
+                
+                <div id="amountContainer" class="hidden amount-input">
+                    <label for="amount">Product Value (TND):</label>
+                    <input type="number" id="amount" min="0" step="0.01" placeholder="Enter product value">
+                </div>
+                
+                <button id="addItemBtn" class="add-item-btn hidden" onclick="addItem()">Add Item</button>
+                
+                <div id="itemsList" class="item-list hidden">
+                    <h3>Selected Items</h3>
+                    <!-- Items will be added here -->
+                </div>
+                
+                <div>
+                    <label for="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod">
+                        <option value="cash_card">Cash/Card</option>
+                        <option value="facilite">Facilité de paiement</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="location">Delivery Location:</label>
+                    <select id="location">
+                        <option value="1">Grand Tunis (+7 TND)</option>
+                        <option value="2">Bizerte, Béja, Jendouba, Nabeul, Manouba (+30 TND)</option>
+                        <option value="3">Siliana, Zaghouan, Kef, Sousse, Monastir, Kairouan (+40 TND)</option>
+                        <option value="4">Gafsa, Sidi Bouzid, Mahdia, Sfax, Kasserine (+80 TND)</option>
+                        <option value="5">Tozeur, Kébili, Gabès, Medenine, Tataouine (+100 TND)</option>
+                    </select>
+                </div>
+                
+                <button onclick="calculateDelivery()">Calculate Delivery Cost</button>
+            </div>
+            
+            <div class="result-section">
+                <h2>Delivery Cost</h2>
+                <div id="result">Please select product and location</div>
+                <div id="priceBreakdown" class="price-breakdown hidden">
+                    <h3>Price Breakdown</h3>
+                    <div id="itemsCost">Items cost: 0 TND</div>
+                    <div id="quantityDiscount">Quantity adjustment: 0 TND</div>
+                    <div id="locationCost">Location surcharge: 0 TND</div>
+                    <div id="specialDiscount">Special discount: 0 TND</div>
+                    <div id="totalCost">Total delivery cost: 0 TND</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product database
+        const products = {
+
+            electromenager: {
+                "Climatisation & Chauffage": {
+                    "Climatiseur": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Ventilateur": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Chauffe bain": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Chaudière": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Climeur": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Purificateur d'air": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Accessoires Climatiseur": { type: "accessory", cash_card: 7, facilite: 7 }
+                },
+                "Électroménager Cuisine": {
+                    "Please select Product": { type: "standard" ,value :'select' },
+                    "Réfrigérateur/MINI BAR/Congelateur": { type: "fridge" },
+                    "Cuisinière à gaz": { type: "standard", cash_card: 25, facilite: 35 },
+                    "Four Encastrable/four électrique": { type: "standard", cash_card: 25, facilite: 35 },
+                    "Hotte": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Plaque de Cuisson": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Micro onde": { type: "standard", cash_card: 15, facilite: 25 },
+                    "Pack Électroménager": { type: "standard", cash_card: 40, facilite: 50 },
+                    "Fontaine Fraîche": { type: "standard", cash_card: 15, facilite: 25 }
+                },
+                "Électroménager Lavage": {
+                    "Lave Vaisselle": { type: "standard", cash_card: 30, facilite: 40 },
+                    "Machine À Laver": { type: "standard", cash_card: 30, facilite: 40 },
+                    "Sèche Linge": { type: "standard", cash_card: 30, facilite: 40 },
+                    "Défroisseur": { type: "standard", cash_card: 15, facilite: 25 },
+                    "Fer À Repasser": { type: "standard", cash_card: 15, facilite: 25 },
+                    "Table à Repasser": { type: "standard", cash_card: 20, facilite: 30 },
+                    "Accessoires Nettoyeur": { type: "accessory", cash_card: 7, facilite: 7 },
+                    "Nettoyeur Haute Pression": { type: "standard", cash_card: 25, facilite: 35 },
+                    "Aspirateur": { type: "standard", cash_card: 15, facilite: 25 },
+                    "Machine À Coudre": { type: "standard", cash_card: 20, facilite: 30 }
+                },
+                "Café & Petit Déjeuner": {
+                    "Machine à café": { type: "standard", cash_card: 15, facilite: 25 }
+                },
+                "Petit Electro Cuisine": {
+                    "Mixeur": { type: "standard", cash_card: 10, facilite: 15 },
+                    "Robot Culinaire": { type: "standard", cash_card: 15, facilite: 25 },
+                    "Grille-pain": { type: "standard", cash_card: 10, facilite: 15 }
+                },
+                "Appareil de cuisson": {
+                    "Friteuse": { type: "standard", cash_card: 15, facilite: 25 },
+                    "Grill électrique": { type: "standard", cash_card: 15, facilite: 25 }
+                }
+            },
+            electronique: {
+                "PC": { type: "standard", cash_card: 20, facilite: 30 },
+                "Smartphone": { type: "standard", cash_card: 15, facilite: 20 },
+                "Tablette": { type: "standard", cash_card: 15, facilite: 25 },
+                "Autres": { type: "standard", cash_card: 10, facilite: 15 }
+            },
+            tv: {
+                "TV LED": { type: "tv", cash_card: 25, facilite: 35 },
+                "Autres": { type: "standard", cash_card: 20, facilite: 30 }
+            },
+            burotique: {
+                "Matériel Point De Vente": { type: "standard", cash_card: 10, facilite: 15 },
+                "Classement & Archivage": { type: "standard", cash_card: 10, facilite: 15 },
+                "Cahier, Bloc & Feuille": { type: "standard", cash_card: 5, facilite: 5 },
+                "Papier": { type: "standard", cash_card: 5, facilite: 5 },
+                "Tableaux": { type: "standard", cash_card: 10, facilite: 15 },
+                "Fournitures": { type: "standard", cash_card: 5, facilite: 5 },
+                "Cartable": { type: "standard", cash_card: 10, facilite: 15 },
+                "Adhésif, Agrafage & Découpe": { type: "standard", cash_card: 5, facilite: 5 }
+            },
+            maison_jardin: {
+                "Piscine/Spa": { type: "standard", cash_card: 50, facilite: 70 },
+                "Salon": { type: "standard", cash_card: 30, facilite: 40 },
+                "Autres": { type: "standard", cash_card: 20, facilite: 30 }
+            },
+            autres: {
+                "Small Box (Phone size)": { type: "box", price: 7 },
+                "Medium Box (PC size)": { type: "box", price: 15 },
+                "Large Box (Fridge size)": { type: "box", price: 25 }
+            }
+        };
+
+        // Location prices
+        const locationPrices = {
+            "1": 7,
+            "2": 30,
+            "3": 40,
+            "4": 80,
+            "5": 100
+        };
+
+        // Array to store selected items
+        let selectedItems = [];
+
+        // Update subcategories based on main category selection
+        function updateSubcategories() {
+            const mainCategory = document.getElementById('mainCategory').value;
+            const subcategoryContainer = document.getElementById('subcategoryContainer');
+            const subcategorySelect = document.getElementById('subcategory');
+            const productContainer = document.getElementById('productContainer');
+            const productDetailsContainer = document.getElementById('productDetailsContainer');
+            const addItemBtn = document.getElementById('addItemBtn');
+            const amountContainer = document.getElementById('amountContainer');
+            
+            // Clear previous selections
+            subcategorySelect.innerHTML = '';
+            productContainer.classList.add('hidden');
+            productDetailsContainer.classList.add('hidden');
+            addItemBtn.classList.add('hidden');
+            amountContainer.classList.add('hidden');
+            
+            if (!mainCategory) {
+                subcategoryContainer.classList.add('hidden');
+                return;
+            }
+            
+            // Only show subcategories for Électroménager
+            if (mainCategory === 'electromenager') {
+                subcategoryContainer.classList.remove('hidden');
+                const subcategories = Object.keys(products.electromenager);
+                subcategories.forEach(subcat => {
+                    const option = document.createElement('option');
+                    option.value = subcat;
+                    option.textContent = subcat;
+                    subcategorySelect.appendChild(option);
+                });
+            } else {
+                // For categories without subcategories, skip to products (except Autres)
+                subcategoryContainer.classList.add('hidden');
+                if (mainCategory !== 'autres') {
+                    updateProducts();
+                } else {
+                    // For Autres, show the box options directly
+                    showProductDetails();
+                    document.getElementById('addItemBtn').classList.remove('hidden');
+                }
+            }
+        }
+
+        // Update products based on selection
+        function updateProducts() {
+            const mainCategory = document.getElementById('mainCategory').value;
+            const subcategory = document.getElementById('subcategory').value;
+            const productSelect = document.getElementById('product');
+            const productContainer = document.getElementById('productContainer');
+            const productDetailsContainer = document.getElementById('productDetailsContainer');
+            const addItemBtn = document.getElementById('addItemBtn');
+            const amountContainer = document.getElementById('amountContainer');
+            
+            // Clear previous selections
+            productSelect.innerHTML = '';
+            productDetailsContainer.classList.add('hidden');
+            addItemBtn.classList.add('hidden');
+            amountContainer.classList.add('hidden');
+            
+            if (!mainCategory) {
+                productContainer.classList.add('hidden');
+                return;
+            }
+            
+            productContainer.classList.remove('hidden');
+            addItemBtn.classList.remove('hidden');
+            amountContainer.classList.remove('hidden');
+            
+            // Get products based on category
+            let categoryProducts;
+            if (mainCategory === 'electromenager') {
+                categoryProducts = products.electromenager[subcategory];
+            } else {
+                categoryProducts = products[mainCategory];
+            }
+            
+            // Add products to dropdown
+            Object.keys(categoryProducts).forEach(product => {
+                const option = document.createElement('option');
+                option.value = product;
+                option.textContent = product;
+                productSelect.appendChild(option);
+            });
+        }
+
+        // Show product details when product is selected
+        function showProductDetails() {
+            const mainCategory = document.getElementById('mainCategory').value;
+            const productDetailsContainer = document.getElementById('productDetailsContainer');
+            const amountContainer = document.getElementById('amountContainer');
+            
+            // Clear previous details
+            productDetailsContainer.innerHTML = '';
+            
+            if (!mainCategory) {
+                productDetailsContainer.classList.add('hidden');
+                amountContainer.classList.add('hidden');
+                return;
+            }
+            
+            if (mainCategory === 'autres') {
+                productDetailsContainer.innerHTML = `
+                    <div class="box-options">
+                        <div class="box-option">
+                            <input type="radio" id="smallBox" name="boxSize" value="small" checked>
+                            <label for="smallBox">Small Box (Phone size) - 7 TND</label>
+                        </div>
+                        <div class="box-option">
+                            <input type="radio" id="mediumBox" name="boxSize" value="medium">
+                            <label for="mediumBox">Medium Box (PC size) - 15 TND</label>
+                        </div>
+                        <div class="box-option">
+                            <input type="radio" id="largeBox" name="boxSize" value="large">
+                            <label for="largeBox">Large Box (Fridge size) - 25 TND</label>
+                        </div>
+                    </div>
+                `;
+                productDetailsContainer.classList.remove('hidden');
+                amountContainer.classList.add('hidden');
+            } else {
+                const product = document.getElementById('product').value;
+                if (!product) {
+                    productDetailsContainer.classList.add('hidden');
+                    return;
+                }
+                
+                let productData;
+                const subcategory = document.getElementById('subcategory').value;
+                if (mainCategory === 'electromenager') {
+                    productData = products.electromenager[subcategory][product];
+                } else {
+                    productData = products[mainCategory][product];
+                }
+
+
+                
+                if (product === "Réfrigérateur/MINI BAR/Congelateur") {
+                    productDetailsContainer.innerHTML = `
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="sideBySide">
+                            <label for="sideBySide">Side by side (+20 TND)</label>
+                        </div>
+                        <label for="volume">Volume (Liters):</label>
+                        <input type="number" id="volume" min="0" placeholder="Enter volume in liters">
+                        <small>Volume-based fees: 0-80L=15, 80-230L=25, 230-500L=30, 500-1000L=35 TND</small>
+                    `;
+                    productDetailsContainer.classList.remove('hidden');
+                    amountContainer.classList.remove('hidden');
+                }else if(product === "TV LED"){
+                     productDetailsContainer.innerHTML = `
+                       
+                        <label for="pouces"Taille de l'écran (pouces):</label>
+                        <input type="number" id="pouces" min="0" placeholder="Enter pouces ">
+                        
+                    `;
+                    productDetailsContainer.classList.remove('hidden');
+                    amountContainer.classList.remove('hidden');
+                } 
+                else {
+                    productDetailsContainer.classList.add('hidden');
+                    amountContainer.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Add item to the list
+        function addItem() {
+            const mainCategory = document.getElementById('mainCategory').value;
+            const itemsList = document.getElementById('itemsList');
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            
+            let item;
+            
+            if (mainCategory === 'autres') {
+                const boxSize = document.querySelector('input[name="boxSize"]:checked').value;
+                const boxName = boxSize === 'small' ? 'Small Box (Phone size)' : 
+                               boxSize === 'medium' ? 'Medium Box (PC size)' : 'Large Box (Fridge size)';
+                
+                item = {
+                    category: mainCategory,
+                    name: boxName,
+                    type: "box",
+                    cash_card: products.autres[boxName].price,
+                    facilite: products.autres[boxName].price,
+                    boxSize: boxSize,
+                    amount: products.autres[boxName].price // For boxes, amount is the fixed price
+                };
+            } else {
+                const subcategory = document.getElementById('subcategory').value;
+                const product = document.getElementById('product').value;
+                
+                if (!product ) return;
+                if (product === "Please select Product" ) {
+                    alert("please select Product")
+                    return false
+                }
+                let productData;
+                if (mainCategory === 'electromenager') {
+                    productData = products.electromenager[subcategory][product];
+                } else {
+                    productData = products[mainCategory][product];
+                }
+                
+                item = {
+                    category: mainCategory,
+                    subcategory: mainCategory === 'electromenager' ? subcategory : null,
+                    name: product,
+                    type: productData.type,
+                    cash_card: productData.cash_card || productData.price,
+                    facilite: productData.facilite || productData.price,
+                    sideBySide: product === "Réfrigérateur/MINI BAR/Congelateur" ? 
+                        document.getElementById('sideBySide')?.checked : false,
+                    volume: product === "Réfrigérateur/MINI BAR/Congelateur" ? 
+                        parseInt(document.getElementById('volume')?.value) || 0 : 0,
+                    amount: amount
+                };
+            }
+            
+            // Add to selected items
+            selectedItems.push(item);
+            
+            // Update UI
+            updateItemsList();
+            
+            // Clear product details
+            document.getElementById('productDetailsContainer').innerHTML = '';
+            document.getElementById('amount').value = '';
+            if (mainCategory !== 'autres') {
+                document.getElementById('product').selectedIndex = 0;
+            }
+        }
+
+        // Update the items list UI
+        function updateItemsList() {
+            const itemsList = document.getElementById('itemsList');
+            
+            if (selectedItems.length === 0) {
+                itemsList.classList.add('hidden');
+                return;
+            }
+            
+            itemsList.classList.remove('hidden');
+            itemsList.innerHTML = '<h3>Selected Items</h3>';
+            
+            selectedItems.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'item';
+                
+                const itemName = document.createElement('div');
+                itemName.className = 'item-name';
+                itemName.textContent = item.name;
+                
+                if (item.name === "Réfrigérateur/MINI BAR/Congelateur") {
+                    const details = [];
+                    if (item.sideBySide) details.push("Side by side");
+                    if (item.volume > 0) details.push(`${item.volume}L`);
+                    if (details.length > 0) {
+                        itemName.textContent += ` (${details.join(', ')})`;
+                    }
+                else if (item.name === "TV LED"){
+                    const details = [];
+                    if (item.pouces > 0) details.push(`${item.pouces}"`);
+                    if (details.length > 0) {
+                        itemName.textContent += ` (${details.join(', ')})`;
+                    }
+                }
+
+                } else if (item.category === 'autres') {
+                    itemName.textContent = item.name.replace(' (Phone size)', '')
+                                                   .replace(' (PC size)', '')
+                                                   .replace(' (Fridge size)', '');
+                }
+                
+                const itemAmount = document.createElement('div');
+                itemAmount.textContent = `${item.amount.toFixed(2)} TND`;
+                itemAmount.style.marginLeft = '10px';
+                itemAmount.style.fontWeight = 'bold';
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-item';
+                removeBtn.textContent = 'Remove';
+                removeBtn.onclick = () => removeItem(index);
+                
+                itemElement.appendChild(itemName);
+                itemElement.appendChild(itemAmount);
+                itemElement.appendChild(removeBtn);
+                itemsList.appendChild(itemElement);
+            });
+        }
+
+        // Remove item from the list
+        function removeItem(index) {
+            selectedItems.splice(index, 1);
+            updateItemsList();
+        }
+
+        // Calculate the delivery cost
+        function calculateDelivery() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const location = document.getElementById('location').value;
+            const resultDiv = document.getElementById('result');
+            const priceBreakdown = document.getElementById('priceBreakdown');
+            
+            if (selectedItems.length === 0 || !location) {
+                resultDiv.textContent = "Please add at least one item and select location";
+                priceBreakdown.classList.add('hidden');
+                return;
+            }
+            
+            // Calculate base cost for all items
+            let itemsCost = 0;
+            let totalAmount = 0; // Total value of products
+            
+            selectedItems.forEach(item => {
+                if (item.name === "Réfrigérateur/MINI BAR/Congelateur") {
+                    // Apply side by side fee if selected
+                    if (item.sideBySide) {
+                        itemsCost += 20;
+                    }
+                    
+                    // Apply volume-based fees
+                    if (item.volume > 0) {
+                        if (item.volume <= 80) itemsCost += 15;
+                        else if (item.volume <= 230) itemsCost += 25;
+                        else if (item.volume <= 500) itemsCost += 30;
+                        else if (item.volume <= 1000) itemsCost += 35;
+                        else itemsCost += 40; // For volumes > 1000L
+                    }
+                }
+                else if(item.name === "TV LED"){
+
+                    if (item.pouces > 0) {
+                        if (item.pouces <= 43) itemsCost += 15;
+                        else if (item.pouces <= 55) itemsCost += 25;
+                        else itemsCost += 30; // For pouces  
+                    }
+                    alert(item.pouces , itemsCost)
+                }
+                
+                else if (item.type === 'standard' || item.type === 'accessory' || item.type === 'box') {
+                    itemsCost += item[paymentMethod];
+                }
+                
+                // Sum up the product values
+                totalAmount += item.amount;
+            });
+            
+            // Apply quantity discount
+            let discountRate = 0;
+            let discountText = "No quantity adjustment";
+            
+            if (selectedItems.length === 2) {
+                discountRate = 0.5; // 50% increase
+                discountText = "50% increase (2 items)";
+            } else if (selectedItems.length === 3) {
+                discountRate = 0.6; // 60% increase
+                discountText = "60% increase (3 items)";
+            } else if (selectedItems.length >= 4) {
+                discountRate = -0.2; // 20% discount
+                discountText = "20% discount (4+ items)";
+            }
+            
+            const discountAmount = itemsCost * discountRate;
+            const discountedCost = itemsCost + discountAmount;
+            
+            // Get location cost
+            let locationCost = locationPrices[location];
+            
+            // Apply special discount for Grand Tunis (1 item, not side by side, total > 300, cash payment)
+            let specialDiscount = 0;
+            let specialDiscountText = "No special discount";
+            
+            if (location === "1" && selectedItems.length === 1 && totalAmount > 300 && paymentMethod === "cash_card") {
+                const item = selectedItems[0];
+                if (!item.sideBySide) {
+                    specialDiscount =  -discountedCost;
+                    alert(specialDiscount)
+                    specialDiscountText = "Free delivery for Grand Tunis (1 item > 300 TND, cash payment)";
+                    locationCost = 0;
+                    
+                }
+            }
+            
+            // Calculate total
+            const totalCost = discountedCost + locationCost + specialDiscount;
+            
+            // Display results
+            resultDiv.textContent = `Total Delivery Cost: ${totalCost.toFixed(2)} TND`;
+            
+            // Show price breakdown
+            document.getElementById('itemsCost').textContent = `Items cost: ${itemsCost.toFixed(2)} TND`;
+            document.getElementById('quantityDiscount').textContent = `Quantity adjustment (${discountText}): ${discountAmount.toFixed(2)} TND`;
+            document.getElementById('locationCost').textContent = `Location surcharge: ${locationCost.toFixed(2)} TND`;
+            document.getElementById('specialDiscount').textContent = `Special discount: ${specialDiscountText}`;
+            document.getElementById('totalCost').textContent = `Total delivery cost: ${totalCost.toFixed(2)} TND`;
+            priceBreakdown.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
